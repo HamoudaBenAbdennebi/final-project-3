@@ -11,7 +11,7 @@ import {
   SIGN_OUT_FAILURE,
   SIGN_OUT_REQUEST,
   SIGN_OUT_SUCCESS,
-} from "./action-types";
+} from "../actionTypes/userTypes";
 
 const initState = {
   currentUser: localStorage.getItem("USER-TOKEN")

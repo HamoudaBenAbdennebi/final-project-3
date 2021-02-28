@@ -29,6 +29,7 @@ const signInUser = (payload) => {
     .exec()
     .then((user) => {
       if (!user) {
+        console.log(user);
         throw new Error("Please enter email or password");
       } else {
         return bcrypt

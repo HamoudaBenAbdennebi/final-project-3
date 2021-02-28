@@ -2,6 +2,7 @@ const { createUser, signInUser } = require("../service/userService");
 
 const signUp = async (req, res, next) => {
   try {
+    console.log("new request");
     const newUser = req.body;
     const savedUser = await createUser(newUser);
     res.status(201).json({

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { baseUrl } from "../../api/api";
 
 import {
   SIGN_IN_FAILURE,
@@ -10,7 +11,7 @@ import {
   SIGN_OUT_FAILURE,
   SIGN_OUT_REQUEST,
   SIGN_OUT_SUCCESS,
-} from "./action-types";
+} from "../actionTypes/userTypes";
 
 //Sign up action creators
 const signUpRequest = () => ({
@@ -32,24 +33,30 @@ const signUpFailure = (error) => {
   };
 };
 
-export const signUp = (user, history) => {
-  return function (dispatch) {
-    dispatch(signUpRequest());
-    axios({
-      method: "post",
-      url: "/signUp",
-      data: user,
-    })
-      .then((response) => {
-        const { data } = response.data;
-        dispatch(signUpSuccess(data));
-        history.push("/");
-      })
-      .catch((error) => {
-        console.log(error);
-        dispatch(signUpFailure(error));
-      });
-  };
+export const signUp = (user) => async (dispatch) => {
+  dispatch(signUpRequest());
+  try {
+    const response = await axios.post(`${baseUrl}/users/add`, user);
+    dispatch(signUpSuccess(response.data));
+  } catch (error) {
+    console.log(error);
+    dispatch(signUpFailure(error));
+  }
+
+  // axios({
+  //   method: "post",
+  //   url: "/users/add",
+  //   data: user,
+  // })
+  //   .then((response) => {
+  //     const { data } = response.data;
+  //     dispatch(signUpSuccess(data));
+  //     history.push("/");
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //     dispatch(signUpFailure(error));
+  //   });
 };
 
 //Sign in action creators
@@ -73,22 +80,19 @@ const signInFailure = (error) => {
   };
 };
 
-export const signIn = (payload, history) => {
+export const signIn = (payload) => {
   return function (dispatch) {
     dispatch(signInRequest);
-    axios({
-      method: "post",
-      url: "/signIn",
-      data: payload,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("USER-TOKEN")}`,
-      },
-    })
+    axios
+      .post(`${baseUrl}/users/login`, payload, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("USER-TOKEN")}`,
+        },
+      })
       .then((response) => {
         const { token } = response.data;
         localStorage.setItem("USER-TOKEN", token);
         dispatch(signInSuccess(token));
-        history.push("/home");
       })
       .catch((error) => {
         dispatch(signInFailure(error));
